@@ -15,7 +15,7 @@ let lastHighlightedOutline = '';
 let originalCursor = '';
 
 // Listen for messages from popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     if (request.action === 'startSelection') {
         enableElementSelection();
         sendResponse({ success: true });
@@ -54,8 +54,6 @@ function disableElementSelection() {
 }
 
 function highlightElement(event) {
-    event.preventDefault();
-
     // Don't re-highlight the same element
     if (event.target === lastHighlightedElement) {
         return;
