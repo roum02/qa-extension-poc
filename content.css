@@ -1,0 +1,14 @@
+/* Styles for element selection */
+body.selecting-element {
+    cursor: crosshair !important;
+}
+
+.memo-capture-highlight {
+    outline: 2px solid #4CAF50 !important;
+    outline-offset: 2px;
+}
+
+.memo-capture-selected {
+    outline: 3px solid #2196F3 !important;
+    outline-offset: 2px;
+}

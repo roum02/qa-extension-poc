@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        width: 400px;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+      }
+
+      h2 {
+        margin-top: 0;
+        color: #333;
+        font-size: 18px;
+      }
+
+      .section {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      button.secondary {
+        background-color: #2196f3;
+      }
+
+      button.secondary:hover {
+        background-color: #0b7dda;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 13px;
+        resize: vertical;
+        box-sizing: border-box;
+      }
+
+      .element-info {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+
+      .element-info pre {
+        margin: 5px 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .status {
+        padding: 8px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-size: 13px;
+      }
+
+      .status.info {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .status.success {
+        background-color: #e8f5e9;
+        color: #388e3c;
+      }
+
+      .status.error {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>DOM Memo Capture</h2>
+
+    <div class="section">
+      <button id="selectElement" class="secondary">DOM 선택하기</button>
+    </div>
+
+    <div id="statusMessage"></div>
+
+    <div id="elementInfoContainer" style="display: none">
+      <div class="section">
+        <label>선택된 요소:</label>
+        <div class="element-info" id="elementInfo"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <label for="memo">메모:</label>
+      <textarea
+        id="memo"
+        placeholder="선택한 DOM 요소에 대한 메모를 입력하세요..."
+      ></textarea>
+    </div>
+
+    <div class="button-group">
+      <button id="captureButton" disabled>저장</button>
+      <button id="clearButton" class="secondary">초기화</button>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
