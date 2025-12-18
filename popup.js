@@ -208,7 +208,7 @@ function downloadMarkdownFile(filename, content) {
         url: url,
         filename: filename,
         saveAs: true
-    }, (downloadId) => {
+    }, () => {
         if (chrome.runtime.lastError) {
             showStatus('다운로드 오류: ' + chrome.runtime.lastError.message, 'error');
         } else {
