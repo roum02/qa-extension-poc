@@ -1,6 +1,7 @@
 // DOM element selection state
 let selectedElement = null;
-let originalOutline = '';
+let lastHighlightedElement = null;
+let lastHighlightedOutline = '';
 let originalCursor = '';
 
 // Listen for messages from popup
@@ -20,6 +21,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function enableElementSelection() {
+    // Capture the current cursor before changing it so we can restore it later
+    originalCursor = document.body.style.cursor;
+
     document.body.style.cursor = 'crosshair';
 
     // Add event listeners
@@ -31,18 +35,30 @@ function disableElementSelection() {
     document.body.style.cursor = originalCursor;
     document.removeEventListener('mouseover', highlightElement);
     document.removeEventListener('click', selectElement);
+
+    // Clean up: restore the last highlighted element's outline if it's not the selected one
+    if (lastHighlightedElement && lastHighlightedElement !== selectedElement) {
+        lastHighlightedElement.style.outline = lastHighlightedOutline;
+    }
+    lastHighlightedElement = null;
 }
 
 function highlightElement(event) {
     event.preventDefault();
 
-    // Remove previous highlight
-    if (selectedElement && selectedElement !== event.target) {
-        selectedElement.style.outline = originalOutline;
+    // Don't re-highlight the same element
+    if (event.target === lastHighlightedElement) {
+        return;
     }
 
-    // Highlight current element
-    originalOutline = event.target.style.outline;
+    // Restore previous highlighted element's outline
+    if (lastHighlightedElement && lastHighlightedElement !== selectedElement) {
+        lastHighlightedElement.style.outline = lastHighlightedOutline;
+    }
+
+    // Save current element's outline and highlight it
+    lastHighlightedElement = event.target;
+    lastHighlightedOutline = event.target.style.outline;
     event.target.style.outline = '2px solid #4CAF50';
 }
 
@@ -55,10 +71,23 @@ function selectElement(event) {
 
     disableElementSelection();
 
-    // Notify popup that element is selected
-    chrome.runtime.sendMessage({
-        action: 'elementSelected',
-        elementInfo: getElementInfo(selectedElement)
+    const elementInfo = getElementInfo(selectedElement);
+
+    // Store directly in chrome.storage
+    chrome.storage.local.set({
+        selectedElement: elementInfo,
+        selectedTabUrl: window.location.href
+    }, () => {
+        console.log('Element info stored');
+
+        // Also notify popup if it's open
+        chrome.runtime.sendMessage({
+            action: 'elementSelected',
+            elementInfo: elementInfo
+        }).catch(() => {
+            // Popup might be closed, that's OK
+            console.log('Popup is closed, data saved to storage');
+        });
     });
 }
 

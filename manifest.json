@@ -1,16 +1,20 @@
 {
     "name": "DOM Memo Capture",
     "description": "Select DOM elements and capture them with memos to markdown files",
-    "version": "1.0",
+    "version": "1.0.2",
     "manifest_version": 3,
     "permissions": [
         "activeTab",
         "scripting",
-        "downloads"
+        "downloads",
+        "storage",
+        "sidePanel"
     ],
     "action": {
-        "default_popup": "popup.html",
-        "default_icon": "hello_extensions.png"
+        "default_title": "DOM Memo Capture"
+    },
+    "side_panel": {
+        "default_path": "popup.html"
     },
     "content_scripts": [
         {

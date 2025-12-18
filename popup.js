@@ -15,13 +15,25 @@ selectElementBtn.addEventListener('click', startElementSelection);
 captureButton.addEventListener('click', captureToMarkdown);
 clearButton.addEventListener('click', clearAll);
 
-// Listen for messages from content script
+// Load saved element info when popup opens
+document.addEventListener('DOMContentLoaded', async () => {
+    const result = await chrome.storage.local.get(['selectedElement', 'selectedTabUrl']);
+    if (result.selectedElement) {
+        currentElementInfo = result.selectedElement;
+        window.currentTabUrl = result.selectedTabUrl;
+        displayElementInfo(result.selectedElement);
+        captureButton.disabled = false;
+        showStatus('이전에 선택한 DOM 요소가 있습니다.', 'info');
+    }
+});
+
+// Listen for messages from background script (via content script)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'elementSelected') {
         currentElementInfo = request.elementInfo;
         displayElementInfo(request.elementInfo);
         captureButton.disabled = false;
-        showStatus('DOM 요소가 선택되었습니다!', 'success');
+        showStatus('DOM 요소가 선택되었습니다! 팝업을 다시 열어 메모를 작성하세요.', 'success');
     }
 });
 
@@ -38,29 +50,11 @@ async function startElementSelection() {
             return;
         }
 
-        // Try to inject content script dynamically if not already loaded
-        try {
-            await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                files: ['content.js']
-            });
-
-            await chrome.scripting.insertCSS({
-                target: { tabId: tab.id },
-                files: ['content.css']
-            });
-        } catch (e) {
-            // Script might already be injected, continue
-            console.log('Script injection attempt:', e);
-        }
-
-        // Small delay to ensure script is loaded
-        await new Promise(resolve => setTimeout(resolve, 100));
-
         // Send message to content script to start selection
+        // Content script is already loaded via manifest.json content_scripts
         chrome.tabs.sendMessage(tab.id, { action: 'startSelection' }, (response) => {
             if (chrome.runtime.lastError) {
-                showStatus('오류: 페이지를 새로고침하거나 다시 시도해주세요.', 'error');
+                showStatus('오류: 페이지를 새로고침해주세요.', 'error');
                 console.error('Message error:', chrome.runtime.lastError);
                 return;
             }
@@ -185,6 +179,11 @@ function clearAll() {
     elementInfoContainer.style.display = 'none';
     captureButton.disabled = true;
     statusMessage.innerHTML = '';
+
+    // Clear storage
+    chrome.storage.local.remove(['selectedElement', 'selectedTabId', 'selectedTabUrl'], () => {
+        showStatus('초기화되었습니다.', 'info');
+    });
 }
 
 function showStatus(message, type = 'info') {
