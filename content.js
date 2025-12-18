@@ -1,3 +1,13 @@
+(function() {
+    'use strict';
+
+    // Prevent multiple injections
+    if (window.domMemoCapture_loaded) {
+        console.log('DOM Memo Capture already loaded, skipping initialization');
+        return;
+    }
+    window.domMemoCapture_loaded = true;
+
 // DOM element selection state
 let selectedElement = null;
 let lastHighlightedElement = null;
@@ -163,3 +173,5 @@ function getXPath(element) {
         }
     }
 }
+
+})(); // End of IIFE

@@ -49,8 +49,21 @@ async function startElementSelection() {
             return;
         }
 
+        // Ensure content script is loaded before sending message
+        try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['content.js']
+            });
+        } catch (err) {
+            // Content script might already be loaded, ignore error
+            console.log('Content script already loaded or error:', err);
+        }
+
+        // Small delay to ensure content script is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Send message to content script to start selection
-        // Content script is already loaded via manifest.json content_scripts
         chrome.tabs.sendMessage(tab.id, { action: 'startSelection' }, (response) => {
             if (chrome.runtime.lastError) {
                 showStatus('오류: 페이지를 새로고침해주세요.', 'error');

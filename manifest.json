@@ -13,6 +13,9 @@
     "action": {
         "default_title": "DOM Memo Capture"
     },
+    "background": {
+        "service_worker": "background.js"
+    },
     "side_panel": {
         "default_path": "popup.html"
     },
