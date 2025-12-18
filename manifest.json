@@ -1,10 +1,22 @@
 {
-    "name": "Hello Extensions of the world!",
-    "description": "Base Level Extension",
+    "name": "DOM Memo Capture",
+    "description": "Select DOM elements and capture them with memos to markdown files",
     "version": "1.0",
     "manifest_version": 3,
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "downloads"
+    ],
     "action": {
-        "default_popup": "hello.html",
+        "default_popup": "popup.html",
         "default_icon": "hello_extensions.png"
-    }
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"],
+            "css": ["content.css"]
+        }
+    ]
 }
