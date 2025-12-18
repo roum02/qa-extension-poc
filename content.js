@@ -152,6 +152,10 @@ function getElementInfo(element) {
 }
 
 function getXPath(element) {
+    if (!element) {
+        return '';
+    }
+
     if (element.id) {
         return `//*[@id="${element.id}"]`;
     }
@@ -160,18 +164,26 @@ function getXPath(element) {
         return '/html/body';
     }
 
+    if (!element.parentNode) {
+        return '/html';
+    }
+
     let ix = 0;
-    const siblings = element.parentNode?.childNodes || [];
+    const siblings = element.parentNode.childNodes;
 
     for (let i = 0; i < siblings.length; i++) {
         const sibling = siblings[i];
         if (sibling === element) {
-            return getXPath(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
+            const parentPath = getXPath(element.parentNode);
+            return parentPath + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
         }
         if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
             ix++;
         }
     }
+
+    // Fallback: element not found in parent's children (should not happen)
+    return '';
 }
 
 })(); // End of IIFE
