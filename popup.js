@@ -69,14 +69,55 @@ async function startElementSelection() {
 
 function displayElementInfo(info) {
     elementInfoContainer.style.display = 'block';
-    elementInfoDiv.innerHTML = `
-        <div><strong>Tag:</strong> ${info.tag}</div>
-        ${info.id ? `<div><strong>ID:</strong> ${info.id}</div>` : ''}
-        ${info.classes ? `<div><strong>Classes:</strong> ${info.classes}</div>` : ''}
-        <div><strong>Selector:</strong></div>
-        <pre>${info.selector}</pre>
-        ${info.text ? `<div><strong>Text:</strong> ${info.text}${info.text.length >= 100 ? '...' : ''}</div>` : ''}
-    `;
+
+    // Clear previous content
+    elementInfoDiv.textContent = '';
+
+    // Create elements safely using DOM API
+    const tagDiv = document.createElement('div');
+    const tagLabel = document.createElement('strong');
+    tagLabel.textContent = 'Tag:';
+    tagDiv.appendChild(tagLabel);
+    tagDiv.appendChild(document.createTextNode(' ' + info.tag));
+    elementInfoDiv.appendChild(tagDiv);
+
+    if (info.id) {
+        const idDiv = document.createElement('div');
+        const idLabel = document.createElement('strong');
+        idLabel.textContent = 'ID:';
+        idDiv.appendChild(idLabel);
+        idDiv.appendChild(document.createTextNode(' ' + info.id));
+        elementInfoDiv.appendChild(idDiv);
+    }
+
+    if (info.classes) {
+        const classDiv = document.createElement('div');
+        const classLabel = document.createElement('strong');
+        classLabel.textContent = 'Classes:';
+        classDiv.appendChild(classLabel);
+        classDiv.appendChild(document.createTextNode(' ' + info.classes));
+        elementInfoDiv.appendChild(classDiv);
+    }
+
+    const selectorLabel = document.createElement('div');
+    const selectorStrong = document.createElement('strong');
+    selectorStrong.textContent = 'Selector:';
+    selectorLabel.appendChild(selectorStrong);
+    elementInfoDiv.appendChild(selectorLabel);
+
+    const selectorPre = document.createElement('pre');
+    selectorPre.textContent = info.selector;
+    elementInfoDiv.appendChild(selectorPre);
+
+    if (info.text) {
+        const textDiv = document.createElement('div');
+        const textLabel = document.createElement('strong');
+        textLabel.textContent = 'Text:';
+        textDiv.appendChild(textLabel);
+        const displayText = info.text.length >= 100 ? info.text + '...' : info.text;
+        textDiv.appendChild(document.createTextNode(' ' + displayText));
+        elementInfoDiv.appendChild(textDiv);
+    }
 }
 
 async function captureToMarkdown() {
@@ -169,7 +210,7 @@ function clearAll() {
     memoTextarea.value = '';
     elementInfoContainer.style.display = 'none';
     captureButton.disabled = true;
-    statusMessage.innerHTML = '';
+    statusMessage.textContent = '';
 
     // Clear storage
     chrome.storage.local.remove(['selectedElement', 'selectedTabId', 'selectedTabUrl'], () => {
@@ -178,12 +219,19 @@ function clearAll() {
 }
 
 function showStatus(message, type = 'info') {
-    statusMessage.innerHTML = `<div class="status ${type}">${message}</div>`;
+    // Clear previous status
+    statusMessage.textContent = '';
+
+    // Create status div safely
+    const statusDiv = document.createElement('div');
+    statusDiv.className = `status ${type}`;
+    statusDiv.textContent = message;
+    statusMessage.appendChild(statusDiv);
 
     // Auto-hide after 5 seconds
     setTimeout(() => {
-        if (statusMessage.innerHTML.includes(message)) {
-            statusMessage.innerHTML = '';
+        if (statusMessage.contains(statusDiv)) {
+            statusMessage.textContent = '';
         }
     }, 5000);
 }
